@@ -1,9 +1,9 @@
 -------------------------------------------------------------------------------------
 
-               PTR - Laboratório 3 - Simulação de Sistemas com Threads
+# PTR - Laboratório 3 - Simulação de Sistemas com Threads
 
-# Discente : Vinícius Fernandes das Chagas (22050485)
-# Docente  : Prof. André Luis Cavalcante
+Discente : Vinícius Fernandes das Chagas (22050485)
+Docente  : Prof. André Luis Cavalcante
 
 -------------------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ Para compilar e executar o código, siga estas etapas:
    ```
    $ make
    ```
-3.1. Caso o código já esteja compilado, use os seguintes comandos:
+3. 1. Caso o código já esteja compilado, use os seguintes comandos:
    ```
    $ make clean
    $ make

@@ -5,86 +5,95 @@
 
 #define PI 3.14159265358979323846
 
+double f(double x) { return x; }
+
+double integrar(double valor, int a, double b, int n) {
+  for (int i = 0; i < n; i++) {
+    double t = a + i * (b - a) / n;
+    valor += f(t) * (b - a) / n;
+  }
+  return valor;
+}
+
 Matrix* calcula_ut(int t) {
     Matrix* ut = cria_matriz(2, 1);
 
     // 1º Caso: para t < 0
     if (t < 0) {
-        set_matriz(u, 0, 0, 0);
-        set_matriz(u, 1, 0, 0);
-        return ut;
+        ut->dados[0][0] = 0;
+        ut->dados[1][0] = 0;
     }
-
     // 2º Caso: para 0 ⩽ t < 10
-    if (0 <= t && t < 10) {
-        set_matriz(u, 0, 0, 1);
-        set_matriz(u, 1, 0, (0.2 * PI));
-        return ut;
+    else if (0 <= t && t < 10) {
+        ut->dados[0][0] = 1;
+        ut->dados[1][0] = (0.2 * PI);
     }
-
     // 3º Caso: para t ⩾ 10
     else {
-        set_matriz(u, 0, 0, 1);
-        set_matriz(u, 1, 0, ((-0.2) * PI));
-        return ut;
+        ut->dados[0][0] = 1;
+        ut->dados[0][0] = ((-0.2) * PI);
     }
 
+    return ut;
 }
-
-// Declarando o valor de x3 que compõe a matriz x(t)
-double x3(double x) {return x;}
 
 // -> Função que calcula o valor da matriz x(t)
 Matrix* calcula_xt(Matrix *ut, int t) {
 
-    // É preciso calcular a integral de x_derivada, obtendo assim x(t) 
-    Integral* integral = cria_integral(0, get_matriz(&u, 1, 0), 1000);
     Matrix* xt = cria_matriz(3, 1);
 
-    // Setando os valores de x(t)
-    set_matriz(xt, 0, 0, (-cos(get_matriz(&u, 1, 0))) + cos(0));
-    set_matriz(xt, 1, 0, (sin(get_matriz(&u, 1, 0))) - sin(0));
-    set_matriz(xt, 2, 0, calcula_integral(integral, x3));
+    double x3 = ut->dados[1][0];
 
-    // Liberando a integral da memória
-    libera_integral(integral);
+    // Setando os valores de x(t)
+    if (t < 0) {
+        xt->dados[0][0] = 0;
+        xt->dados[1][0] = 0;
+        xt->dados[2][0] = 0;
+
+    } else if (t >= 0 && t < 10) {
+        xt->dados[0][0] = -cos(x3); // sin(x3)
+        xt->dados[1][0] = sin(x3);  // cos(x3)
+        xt->dados[2][0] = 0.2 * PI; // falta integrar
+        
+        // integrando
+        xt->dados[2][0] = integrar(xt->dados[2][0], 0, ut->dados[1][0], 100);
+        
+    } else if (t >= 10) {
+        xt->dados[0][0] = -cos(x3);  // sin(x3)
+        xt->dados[1][0] = sin(x3);   // cos(x3)
+        xt->dados[2][0] = -0.2 * PI; // falta integrar
+        
+        // integrando
+        xt->dados[2][0] = integrar(xt->dados[2][0], 0, ut->dados[1][0], 100);
+
+    }
 
     return xt;
 }
 
-// Função que calcula o valor da matriz y(t)
 Matrix* calcula_yt(Matrix *xt) {
-    
-    // Criando e setando a matriz identidade
-    Matrix* m_id = cria_matriz_identidade(3);
 
-    // Retornando o valor de y pelo produto entre x(t) e a matriz identidade
-    Matrix* yt = produto_matrizes(m_id, &xt);
-    
-    // Liberando a matriz identidade da memória
-    libera_matriz(m_id);
+  // Criar matriz y(t)
+  Matrix *yt = cria_matriz_identidade(3);
 
-    return yt;
+  yt = produto_matrizes(yt, xt);
+
+  return yt;
 }
 
-Matrix* calcula_yft(Matrix *xt, Matrix *u, double diametro) {
-    // Criando a matriz x(t)
-    Matrix* x = calcula_x(t, u);
-    
+Matrix* calcula_yft(Matrix *xt, Matrix *ut, double diametro) {
+
     // Criando e setando a matriz identidade
-    Matrix* m_aux = cria_matriz(3, 3);
-    set_matriz(m_aux, 0, 0, 0.5 * diametro * cos(get_matriz(&x, 2, 0)));
-    set_matriz(m_aux, 0, 1, 0);
-    set_matriz(m_aux, 0, 2, 0);
-    set_matriz(m_aux, 1, 0, 0);
-    set_matriz(m_aux, 1, 1, 0.5 * diametro * sin(get_matriz(&x, 2, 0)));
-    set_matriz(m_aux, 1, 2, 0);
-    set_matriz(m_aux, 2, 0, 0);
-    set_matriz(m_aux, 2, 1, 0);
-    set_matriz(m_aux, 2, 2, 1);
+    Matrix* m_aux = cria_matriz_identidade(3);
+    m_aux->dados[0][0] =  0.5 * diametro * cos(ut->dados[1][0]);
+    m_aux->dados[1][1] =  0.5 * diametro * sin(ut->dados[1][0]);
+
+    print_matriz(m_aux);
 
     // Retornando o valor de y pelo produto entre x(t) e a matriz identidade
-    Matrix* yf = soma_matrizes(produto_matrizes(m_aux, &x), &x);
-    return yf;
+    Matrix* yft = soma_matrizes(produto_matrizes(m_aux, xt), xt);
+    libera_matriz(m_aux);
+
+    return yft;
 }
 

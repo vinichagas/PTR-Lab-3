@@ -20,12 +20,6 @@ Matrix* cria_matriz_identidade(int n);
 // -> Libera da memória a matriz 
 void libera_matriz(Matrix* matriz);
 
-// -> Retorna o valor na posição especificada (linha e coluna) de uma matriz
-double get_matriz(Matrix* matriz, int linha, int coluna);
-
-// -> Define o valor na posição especificada (linha e coluna) de uma matriz
-void set_matriz(Matrix* matriz, int linha, int coluna, double dado);
-
 // -> Retorna a matriz resultante da soma de duas matrizes
 Matrix* soma_matrizes(Matrix* matriz1, Matrix* matriz2);
 

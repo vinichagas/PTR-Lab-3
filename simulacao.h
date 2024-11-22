@@ -1,23 +1,33 @@
 
 // Criando a interface para a simulação
-#ifndef SIMULATION_H
-#define SIMULATION_H
+#ifndef SIMULACAO_H
+#define SIMULACAO_H
 
 #include <stdio.h>
 
 #include "matrix.h"
 
-// Função que faz a transposição e printa uma matriz
-void transpose_and_print(Matrix *m);
+typedef struct {
+    double media;
+    double var;
+    double desv_pad;
+    double min;
+    double max;
+    double q1;
+    double q2;
+    double q3;
+} Dados;
 
-// Função que realiza a simuacao do sistema, recebendo de paramentro
-// 3 matrizes e um intevalo de tempo
-void simulate(Matrix *ut, Matrix *xt, Matrix *yt, Matrix *yft, int t);
+// Função que realiza a simuacao do sistema, recebendo de paramentro 4 matrizes, o diâmetro e um intevalo de tempo
+void simula(Matrix *ut, Matrix *xt, Matrix *yt, Matrix *yft, double diametro, int t);
 
-// Função que ajuda a salvar o resultado da simulação em um arquivo .txt
-void print_matrix_txt(Matrix *m, FILE *fp);
+// Função que gera o gráfico de yf(t)
+void gera_grafico(const char *nome_arquivo);
 
 // Função que salva o resultado da função <print_matrix_txt> no formato CSV
-void save_simulation_results(Matrix *ut, Matrix *xt, Matrix *yt, Matrix *yft, int t, const char *filename);
+void salva_resultados(Matrix *ut, Matrix *xt, Matrix *yt, Matrix *yft, int t, const char *nome_arquivo);
+
+// Função que utiliza as outras funções e escreve os dados finais em uma tabela
+void salva_tabela_dados(int tam, char *nome_arquivo);
 
 #endif

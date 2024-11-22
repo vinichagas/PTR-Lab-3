@@ -41,14 +41,6 @@ void libera_matriz(Matrix* matriz) {
     free(matriz);
 }
 
-double get_matriz(Matrix* matriz, int linha, int coluna) {
-    return matriz->dados[linha][coluna];
-}
-
-void set_matriz(Matrix* matriz, int linha, int coluna, double valor) {
-    matriz->dados[linha][coluna] = valor;
-}
-
 Matrix* soma_matrizes(Matrix* matriz1, Matrix* matriz2) {
     
     // Caso a ordem das matrizes seja diferente...
@@ -290,7 +282,7 @@ void print_matriz(Matrix* matriz) {
     // Percorrendo a matriz
     for (unsigned i = 0; i < matriz->linhas; i++) {
         for (unsigned j = 0; j < matriz->colunas; j++) {
-            printf("%lf ", get_matriz(matriz, i, j)); // Imprimindo cada elemento
+            printf("%lf ", matriz->dados[i][j]); // Imprimindo cada elemento
         }
         printf("\n");
     }

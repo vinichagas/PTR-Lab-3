@@ -62,54 +62,13 @@ void simula(Matrix *ut, Matrix *xt, Matrix *yt, Matrix *yft, double diametro, in
   }
 }
 
-void gera_grafico(const char *nome_arquivo) {
-  char dados[60];
-  char saida[60];
-  char comando[60];
-
-  snprintf(dados, sizeof(dados), "outputs/%s/dados.txt", nome_arquivo);
-  snprintf(saida, sizeof(saida), "outputs/%s/grafico_yf_2d.png", nome_arquivo);
-
-  const char *simulacao = (strstr(nome_arquivo, "OnLoad") != NULL) ? "Simulação com Carga" : "Simulação sem Carga";
-
-  FILE *pipe = popen("gnuplot -persistent", "w");
-  if (pipe == NULL) {
-    fprintf(stderr, "Erro ao abrir o gnuplot.\n");
-    exit(1);
-  }
-
-  // Configuração e geração do gráfico 2D
-  fprintf(pipe, "set terminal pngcairo size 800,600\n");
-  fprintf(pipe, "set output '%s'\n", saida);
-  fprintf(pipe, "set title '{/:Bold=12 %s - Projeção da Trajetória de Yf(t) no Plano (Yf1, Yf2)}'\n", simulacao);
-  fprintf(pipe, "set xlabel 'Yf1(t)'\n");
-  fprintf(pipe, "set ylabel 'Yf2(t)'\n");
-  fprintf(pipe, "unset zlabel\n");
-  fprintf(pipe, "set xtics 2\n"); // Ajuste do espaçamento no eixo Yf1 para o gráfico 2D
-  fprintf(pipe, "set ytics 2\n"); // Ajuste do espaçamento no eixo Yf2 para o gráfico 2D
-  fprintf(pipe, "set grid\n");
-  fprintf(pipe, "set style line 2 pt 7 ps 0.05 lc rgb 'blue'\n");
-  fprintf(pipe, "plot '%s' using 2:3 with points linestyle 2 title 'Trajetória no Plano - Pontos'\n", dados);
-  fprintf(pipe, "unset output\n");
-
-  pclose(pipe);
-
-  // Comandos para abrir cada gráfico gerado usando feh de forma assíncrona
-  if (snprintf(comando, sizeof(comando), "feh '%s' &", saida) < sizeof(comando)) {
-    system(comando);
-  } else {
-    fprintf(stderr, "Erro: Comando feh para gráfico 2D foi truncado.\n");
-  }
-
-}
-
 // Função que salva os resultados da simlação em um .txt no formato CSV
 void salva_resultados(Matrix *ut, Matrix *xt, Matrix *yt, Matrix *yft, int t, const char *nome_arquivo) {
   FILE* arquivo;
+  FILE* dados_grafico_yft;
 
   // Se o arquivo for aberto com sucesso, escreve o estado atual da matriz
   if ((arquivo = fopen(nome_arquivo, "a")) != NULL) {
-    // Header para o passo (opcional)
 
     // Imprime o tempo atual
     fprintf(arquivo, "t = %d\t", t);
@@ -131,6 +90,50 @@ void salva_resultados(Matrix *ut, Matrix *xt, Matrix *yt, Matrix *yft, int t, co
   }
 
   fclose(arquivo);
+
+  // Se o arquivo responsável por plotar o gráfico for aberto com sucesso, escreve os valores de yf(t)
+  if ((dados_grafico_yft = fopen("dados_grafico_yft.txt", "a")) != NULL) {    
+    fprintf(dados_grafico_yft, "%.2lf %.2lf %.2lf\n", yft->dados[0][0], yft->dados[1][0], yft->dados[2][0]); 
+  }
+
+  fclose(dados_grafico_yft);
+
+}
+
+void gera_grafico() {
+  char comando[512];
+
+  // Verifica se o arquivo existe
+  FILE *fp = fopen("dados_grafico_yft.txt", "r");
+  if (fp == NULL) {
+      fprintf(stderr, "Erro ao abrir o arquivo: %s\n", "dados_grafico_yft.txt");
+      return;
+  }
+  fclose(fp);
+
+  // Comando gnuplot
+  snprintf(comando, sizeof(comando), "gnuplot -persist << EOF\n"
+                                       "set terminal pngcairo size 800,600\n"
+                                       "set output '%s'\n"
+                                       "set title '%s'\n"
+                                       "set xlabel 'Eixo X'\n"
+                                       "set ylabel 'Eixo Y'\n"
+                                       "set zlabel 'Eixo Z'\n"
+                                       "set grid\n"
+                                       "set style line 1 pt 7 ps 0.05 lc rgb 'blue'\n"
+                                       "splot '%s' using 1:2:3 with lines title 'Dados'\n"
+                                       "unset output\n"
+                                       "EOF",
+                                       "grafico_yft.png",
+                                       "Gráfico de yf(t)",
+                                       "dados_grafico_yft.txt");
+
+  // Executa o comando gnuplot
+  system(comando);
+
+  // Abre o gráfico com feh
+  snprintf(comando, sizeof(comando), "feh '%s.png' &", "dados_grafico_yft.txt");
+  system(comando);
 }
 
 // Função que realiza a leitura dos dados obtidos na simulação

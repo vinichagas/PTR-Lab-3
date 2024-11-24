@@ -7,14 +7,14 @@
 - Discente : Vinícius Fernandes das Chagas (22050485)
 - Docente  : Prof. André Luis Cavalcante
 
--> Compilando e Executando o Código
+
+## Compilando e Executando o Código
 
 Para compilar e executar o código, siga estas etapas:
 
+1. Abra um terminal ou prompt de comando;
 
-1. Abra um terminal ou prompt de comando.
-
-2. Navegue até o diretório onde os arquivos do código estão localizados usando o comando `cd`.
+2. Navegue até o diretório onde os arquivos do código estão localizados usando o comando `cd`;
 
 3. Compile o código usando o seguinte comando:
    ```
@@ -31,6 +31,8 @@ Para compilar e executar o código, siga estas etapas:
    $ ./main
    ```
 
-6. Ao compilar o código, será exibido um menu pedindo um valor para o diâmetro do robô móvel e um arquivo de texto. O usuário pode usar o arquivo padrão ("saida.txt") ou utilizar algum outro específico. 
+6. Ao compilar o código, será exibido um menu pedindo um valor para o diâmetro do robô móvel. O usuário poderá então digitar um número que desejar;
 
-7. O programa será executado e produzirá a saída com base na simulação especificada. Para verificar a saída, basta abrir o arquivo selecionado no passo anterior.
+7. O programa será executado e produzirá a saída ('saida.txt') com base na simulação especificada;
+
+8. O programa também produzirá um gráfico de yf(t) ('gráfico_yft.png') com base nos dados presentes no arquivo 'dados_gráfico_yft.txt'.

@@ -88,8 +88,8 @@ void* thread_calcula(void* arg) {
 // Função principal do programa
 int main() {
   
-  int t = 20;             // variável que armazena o tempo decorrido
-  char nome_arquivo[50];  // nome do arquivo (tamanho limite: 50)
+  int t = 20;                        // variável que armazena o tempo decorrido
+  char* nome_arquivo = "saida.txt";  // nome do arquivo 
   double diametro;
 
   // Criação do menu inicial
@@ -99,11 +99,9 @@ int main() {
   scanf("%lf", &diametro); // escaneando o tamanho do diâmetro do robô
   printf("\n");
 
-  printf("Digite o nome do arquivo, seguido de .txt (Se o arquivo já existir, os dados irão para o final do arquivo):");
-  printf("\n(Arquivo padrão: 'saida.txt')");
-  printf("\n\n=> ");
-  scanf("%s", nome_arquivo); // escaneando o nome do arquivo
-  printf("\n");
+  // Excluindo os arquivos antes da simulação para evitar conflitos de dados
+  remove(nome_arquivo);
+  remove("dados_grafico_yft.txt");
 
   // Criando as matrizes
   Matrix *ut = cria_matriz(2, 1);
@@ -123,13 +121,13 @@ int main() {
   pthread_join(thread1, NULL);
   pthread_join(thread2, NULL);
 
+  // Gera o gráfico de yf(t)
+  gera_grafico();
+
   // Mensagens de verificação que aparecem no final do programa
   printf("\nOBS: As funções u(t) e yft(t) foram impressas transpostas (uT e yftT)\n\n");
 
   printf("Operações feitas com sucesso!!\n\n");
-
-  // Gera o gráfico de yf(t)
-  gera_grafico(nome_arquivo);
 
   libera_matriz(ut);
   libera_matriz(xt);
